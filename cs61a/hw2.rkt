@@ -10,9 +10,6 @@
 (define (pl-done? wd)
   (vowel? (first wd)))
 
-(define (vowel? letter)
-  (member? letter '(a e i o u)))
-
 (define (square x)
   (* x x))
 
@@ -163,3 +160,35 @@
 (every square '(1 2 3))
 (every (lambda (c) (word c c)) 'purple)
 (keep even? '(781 2))
+
+(define (reverse seq)
+  (if (null? seq)
+      '()
+      (append (reverse (cdr seq)) (list (car seq)))))
+
+(define (vowel? letter)
+  (member? letter '(a e i o u)))
+
+(define (vowel-chopper input)
+  (cond
+    [(empty? input) '()]
+    [(empty? (butfirst input)) (first input)]
+    [(and (vowel? (first input)) (vowel? (first (butfirst input)))) (vowel-chopper (butfirst input))]
+    [else input]))
+
+(define (syllables input)
+  (let ([trimmed (vowel-chopper input)])
+    (cond
+      [(empty? trimmed) 0]
+      [(vowel? (first trimmed)) (+ 1 (syllables (butfirst trimmed)))]
+      [else (+ 0 (syllables (butfirst trimmed)))])))
+
+(define (shorter? a b)
+  (< (count a) (count b)))
+
+(define (in-order? pred sent)
+  (cond
+    [(empty? sent) #t]
+    [(empty? (butfirst sent)) #t]
+    [(pred (first sent) (first (butfirst sent))) (in-order? pred (butfirst sent))]
+    [else #f]))
